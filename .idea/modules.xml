@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Getaround.iml" filepath="$PROJECT_DIR$/Getaround.iml" />
+      <module fileurl="file://$PROJECT_DIR$/GetAround.iml" filepath="$PROJECT_DIR$/GetAround.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
