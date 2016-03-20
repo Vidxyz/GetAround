@@ -41,6 +41,14 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
+
+    ListView listExhibits;
+    ArrayList<String[]> arrayList;
+    ArrayList<String> namesOfListView;
+    ArrayAdapter listAdapter;
+    private BeaconManager beaconManager;
+    private Region region;
+
     private static final Map<String, List<String>> PLACES_BY_BEACONS;
 
     static {
@@ -115,13 +123,6 @@ public class MainActivity extends AppCompatActivity {
 
         return jObs;
     }
-
-    ListView listExhibits;
-    ArrayList<String[]> arrayList;
-    ArrayList<String> namesOfListView;
-    ArrayAdapter listAdapter;
-    private BeaconManager beaconManager;
-    private Region region;
 
     private List<String> placesNearBeacon(Beacon beacon) {
         String beaconKey = String.format("%d:%d", beacon.getMajor(), beacon.getMinor());
