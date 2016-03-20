@@ -1,5 +1,6 @@
 package com.example.vidhyasagar.getaround;
 
+import android.app.ActionBar;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -14,6 +15,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -21,7 +24,14 @@ import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
 import com.estimote.sdk.SystemRequirementsChecker;
+import com.example.vidhyasagar.Description;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,8 +68,57 @@ public class MainActivity extends AppCompatActivity {
         PLACES_BY_BEACONS = Collections.unmodifiableMap(placesByBeacons);
     }
 
+    //HELPER METHODS
+    public String loadJSONFromAsset(String filename) {
+        String json = null;
+        try {
+            InputStream is = getAssets().open(filename); // open data file for parsing
+
+            int size = is.available();
+            byte[] buffer = new byte[size];
+
+            is.read(buffer);
+
+            is.close();
+
+            json = new String(buffer, "UTF-8");
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
+
+    public ArrayList<JSONObject> getBeaconDetails(List<Beacon> beacons){
+        ArrayList<JSONObject> jObs = new ArrayList();
+        try {
+            JSONObject jObject = new JSONObject(loadJSONFromAsset("data.json")); // read json file from assets directory
+
+            JSONArray beaconArray = new JSONArray(jObject.getString("beacons")); // get all beacon objects from json string
+
+            for (int i = 0; i < beacons.size(); i++) {
+                for (int j = 0; j < beaconArray.length(); j ++) {
+                    JSONObject temp = beaconArray.getJSONObject(j);
+                    if (Integer.parseInt(temp.getString("major")) == (beacons.get(i).getMajor()) &&
+                            Integer.parseInt(temp.getString("minor")) == (beacons.get(i).getMinor())){ // found beacon matching
+                        Log.i("success",temp.getString("major") + ", " + beacons.get(i).getMajor() );
+                        jObs.add(temp);
+                        break;
+                    }
+                }
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jObs;
+    }
+
     ListView listExhibits;
-    ArrayList<String> arrayList;
+    ArrayList<String[]> arrayList;
+    ArrayList<String> namesOfListView;
     ArrayAdapter listAdapter;
     private BeaconManager beaconManager;
     private Region region;
@@ -75,9 +134,34 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_main);
 
+
+        arrayList = new ArrayList();
+        namesOfListView = new ArrayList();
+        namesOfListView.add("Nearby Exhibits...");
+        arrayList.add(new String[] {"IGNORE", "THIS", "STRING"});
         listExhibits = (ListView) findViewById(R.id.listExhibits);
+
+        listAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, namesOfListView);
+
+        listExhibits.setAdapter(listAdapter);
+
+        listExhibits.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position != 0) {
+                    Intent description = new Intent(getApplicationContext(), Description.class);
+                    description.putExtra("identifier", arrayList.get(position)[0]);
+                    description.putExtra("description", arrayList.get(position)[1]);
+                    description.putExtra("url", arrayList.get(position)[2]);
+                    description.putExtra("image", arrayList.get(position)[3]);
+                    startActivity(description);
+
+                }
+            }
+        });
 
         beaconManager = new BeaconManager(getApplicationContext());
 
@@ -108,9 +192,31 @@ public class MainActivity extends AppCompatActivity {
             public void onBeaconsDiscovered(Region region, List<Beacon> list) {
                 if (!list.isEmpty()) {
 
-                    Log.i("Beacons found", list.toString());
-
                     Beacon nearestBeacon = list.get(0);
+                    ArrayList<JSONObject> beaconInfo = getBeaconDetails(list);
+
+                    for(int i = 0; i < beaconInfo.size(); i++) {
+                        try {
+                            if (!namesOfListView.contains(beaconInfo.get(i).getString("name")))
+                            {
+                                    namesOfListView.add(beaconInfo.get(i).getString("name"));
+                                    arrayList.add(new String[] {beaconInfo.get(i).getString("name"),
+                                            beaconInfo.get(i).getString("description"),
+                                            beaconInfo.get(i).getString("url"),
+                                            beaconInfo.get(i).getString("image")});
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+//                    namesOfListView.clear();
+//                    for(String[] each : arrayList) {
+//                        namesOfListView.add(each[0]);
+//                    }
+
+                    listAdapter.notifyDataSetChanged();
+
                     List<String> places = placesNearBeacon(nearestBeacon);
                     // TODO: update the UI here
                     Log.d("Airport", "Nearest places: " + places);

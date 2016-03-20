@@ -1,0 +1,28 @@
+{
+  "beacons":[
+{
+"major":"24028",
+"minor":"20615",
+"name":"Elephant Exhibit",
+"description":"Elephants are large mammals of the family Elephantidae and the order Proboscidea. Two species are traditionally recognised, the African elephant (Loxodonta africana) and the Asian elephant (Elephas maximus), although some evidence suggests that African bush elephants and African forest elephants are separate species (L. africana and L. cyclotis respectively). Elephants are scattered throughout sub-Saharan Africa, South Asia, and Southeast Asia.",
+"url":"https://en.wikipedia.org/wiki/Elephant",
+"image": "elephant"
+},
+{
+"major":"59932",
+"minor":"55122",
+"name":"Rhino Exhibit",
+"description":"Rhinoceros (/raɪˈnɒsərəs/, meaning 'nose horn'), often abbreviated to rhino, is a group of five extant species of odd-toed ungulates in the family Rhinocerotidae. Two of these species are native to Africa and three to Southern Asia",
+"url":"https://en.wikipedia.org/wiki/Rhinoceros",
+"image": "rhino"
+},
+{
+"major":"64904",
+"minor":"53347",
+"name":"Moose Exhibit",
+"description":"The moose (North America) or elk (Eurasia), Alces alces, is the largest extant species in the deer family. Moose are distinguished by the palmate antlers of the males; other members of the family have antlers with a dendritic (\"twig-like\") configuration. Moose typically inhabit boreal and mixed deciduous forests of the Northern Hemisphere in temperate to subarctic climates.",
+"url":"https://en.wikipedia.org/wiki/Moose",
+"image": "moose"
+}
+]
+}
